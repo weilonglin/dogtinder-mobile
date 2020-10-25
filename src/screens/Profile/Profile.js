@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { Avatar, Accessory } from "react-native-elements";
-
+import { Avatar, Accessory, Icon } from "react-native-elements";
+import { LinearGradient } from "expo-linear-gradient";
 import { useQuery } from "@apollo/client";
 import jwtDecode from "jwt-decode";
 import { GET_USER } from "../../graphql/queries";
@@ -48,9 +48,48 @@ export const Profile = ({ navigation, route }) => {
           <Text style={styles.userInfo}>{data.user.email}</Text>
         </View>
         <View style={styles.buttonSection}>
-          <TouchableOpacity style={styles.loginBtn} onPress={() => signOut()}>
+          <View>
+            <Icon
+              reverse
+              name="cog"
+              type="font-awesome"
+              color="#CDCDCD"
+              size={30}
+            ></Icon>
+            <Text style={styles.buttonText}>Edit info</Text>
+          </View>
+          <View>
+            <Icon
+              reverse
+              name="paw"
+              type="font-awesome"
+              color="#fd267d"
+              size={45}
+            ></Icon>
+            <Text style={styles.buttonText}>Add dog</Text>
+          </View>
+
+          <View>
+            <Icon
+              reverse
+              name="pencil"
+              type="font-awesome"
+              color="#CDCDCD"
+              size={30}
+            ></Icon>
+            <Text style={styles.buttonText}>Settings</Text>
+          </View>
+        </View>
+        <View style={styles.logOutButtonSection}>
+          <LinearGradient
+            colors={["#fd267d", "#ff7854"]}
+            start={{ x: 0, y: 1 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.loginBtn}
+            onPress={() => signOut()}
+          >
             <Text style={styles.loginText}>Sign out</Text>
-          </TouchableOpacity>
+          </LinearGradient>
         </View>
       </View>
     );
@@ -67,6 +106,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#fff",
   },
   loginBtn: {
     width: "80%",
@@ -75,19 +115,18 @@ const styles = StyleSheet.create({
     height: 50,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: 40,
-    marginBottom: 10,
   },
   loginText: {
     color: "white",
+    fontSize: 20,
   },
   avatarSection: {
-    flex: 2,
+    flex: 3,
     alignItems: "center",
     justifyContent: "center",
   },
   userInfoSection: {
-    flex: 1,
+    flex: 2,
     alignItems: "center",
     justifyContent: "flex-start",
   },
@@ -99,9 +138,24 @@ const styles = StyleSheet.create({
   userInfo: {
     fontSize: 20,
   },
+  buttonText: {
+    fontSize: 15,
+    color: "#CDCDCD",
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
+  },
   buttonSection: {
     width: "100%",
     flex: 2,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "center",
+  },
+  logOutButtonSection: {
+    width: "100%",
+    flex: 2,
+    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
   },
