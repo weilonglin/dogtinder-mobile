@@ -86,9 +86,10 @@ export const Profile = ({ navigation, route }) => {
             start={{ x: 0, y: 1 }}
             end={{ x: 1, y: 0 }}
             style={styles.loginBtn}
-            onPress={() => signOut()}
           >
-            <Text style={styles.loginText}>Sign out</Text>
+            <TouchableOpacity onPress={() => signOut()}>
+              <Text style={styles.loginText}>Sign out</Text>
+            </TouchableOpacity>
           </LinearGradient>
         </View>
       </View>
