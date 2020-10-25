@@ -26,6 +26,7 @@ export const Login = ({ navigation, route }) => {
   const [loginUser, { loading }] = useLazyQuery(LOGIN_USER, {
     onError: (err) => console.log(err.graphQLErrors),
     onCompleted(data) {
+      console.log("data", data);
       try {
         const setStorage = async () => {
           await AsyncStorage.setItem("userToken", data.login.token);
