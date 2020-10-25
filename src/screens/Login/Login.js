@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   Text,
@@ -7,31 +7,31 @@ import {
   TouchableOpacity,
   ImageBackground,
 } from "react-native";
+import AsyncStorage from "@react-native-community/async-storage";
 import { useLazyQuery } from "@apollo/client";
 import { LOGIN_USER } from "../../graphql/queries";
-import AsyncStorage from "@react-native-community/async-storage";
+import { AuthContext } from "../../context/Auth";
+
 const backGroundImage = {
   uri: "https://art-u1.infcdn.net/articles_uploads/2/2270/Tindog_Main.png",
 };
 
-export const Login = ({ navigation }) => {
+export const Login = ({ navigation, route }) => {
   const [variables, setVariables] = useState({
     userName: "",
     password: "",
   });
+  const { signIn, signUp } = useContext(AuthContext);
+
   const [loginUser, { loading }] = useLazyQuery(LOGIN_USER, {
     onError: (err) => console.log(err.graphQLErrors),
     onCompleted(data) {
       try {
         const setStorage = async () => {
-          await AsyncStorage.setItem("token", data.login.token);
+          await AsyncStorage.setItem("userToken", data.login.token);
         };
         setStorage();
-        const testing = async () => {
-          const userAge = await AsyncStorage.getItem("token");
-          console.log("testing the storage", userAge);
-        };
-        testing();
+        signIn(data.login.token);
       } catch (error) {
         // Error saving data
       }

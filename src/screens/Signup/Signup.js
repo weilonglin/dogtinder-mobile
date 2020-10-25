@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import { REGISTER_USER } from "../../graphql/queries";
 const backGroundImage = {
   uri: "https://art-u1.infcdn.net/articles_uploads/2/2270/Tindog_Main.png",
 };
+import { AuthContext } from "../../context/Auth";
 
 export const Signup = ({ navigation }) => {
   const [variables, setVariables] = useState({
@@ -24,6 +25,7 @@ export const Signup = ({ navigation }) => {
     city: "asd",
     imageUrl: "",
   });
+  const { signIn, signUp } = useContext(AuthContext);
   const [registerUser, { loading }] = useMutation(REGISTER_USER, {
     onError: (err) => console.log(err.graphQLErrors[0].extensions.errors),
     onCompleted(data) {

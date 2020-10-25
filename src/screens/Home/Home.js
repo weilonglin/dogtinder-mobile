@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useEffect } from "react";
 import { ImageBackground, StyleSheet, Text, View, Alert } from "react-native";
 import { Button } from "react-native-elements";
 import { useQuery } from "@apollo/client";
@@ -10,13 +10,13 @@ const backGroundImage = {
   uri: "https://art-u1.infcdn.net/articles_uploads/2/2270/Tindog_Main.png",
 };
 
-export const Home = () => {
+export const Home = ({ navigation, route }) => {
   const { data } = useQuery(GET_USER, {
     variables: {
       id: 4,
     },
   });
-  console.log(data);
+
   return (
     <ImageBackground source={backGroundImage} style={styles.image}>
       <Text style={styles.header}>Discover. Chat. Meet.</Text>
@@ -29,6 +29,7 @@ export const Home = () => {
             height: 50,
           }}
           style={styles.button}
+          onPress={() => navigation.navigate("Login")}
         />
         <Button
           title="Sign up"
@@ -38,6 +39,7 @@ export const Home = () => {
             height: 50,
             paddingLeft: 10,
           }}
+          onPress={() => navigation.navigate("Signup")}
         />
       </View>
       <StatusBar style="auto" />
