@@ -12,15 +12,19 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+
 import AsyncStorage from "@react-native-community/async-storage";
 
 import { Main } from "./src/screens";
 import { Home } from "./src/screens/Home/Home";
 import { Login } from "./src/screens/Login/Login";
 import { Signup } from "./src/screens/Signup/Signup";
+import { Profile } from "./src/screens/Profile/Profile";
+
 import { AuthContext } from "./src/context/Auth";
 
-const Tab = createBottomTabNavigator();
+const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
@@ -124,11 +128,11 @@ export default function App({ navigation }) {
       <ApolloProvider client={client}>
         <NavigationContainer>
           {state.userToken != null ? (
-            <Drawer.Navigator initialRouteName="My Profile">
-              <Drawer.Screen name="My Profile" component={Main} />
-              <Drawer.Screen name="Chat" component={Main} />
-              <Drawer.Screen name="Discover" component={Main} />
-            </Drawer.Navigator>
+            <Tab.Navigator initialRouteName="My Profile">
+              <Tab.Screen name="My Profile" component={Profile} />
+              <Tab.Screen name="Chat" component={Main} />
+              <Tab.Screen name="Discover" component={Main} />
+            </Tab.Navigator>
           ) : (
             <Drawer.Navigator initialRouteName="Home">
               <Drawer.Screen name="Home" component={Home} />
