@@ -5,7 +5,8 @@ import React, {
   useMemo,
   useReducer,
 } from "react";
-import { StyleSheet, View } from "react-native";
+import jwtDecode from "jwt-decode";
+import { StyleSheet, View, SafeAreaView } from "react-native";
 import { client } from "./src/graphql/client";
 import { ApolloProvider } from "@apollo/client";
 import { NavigationContainer } from "@react-navigation/native";
@@ -24,22 +25,25 @@ import { Profile } from "./src/screens/Profile/Profile";
 
 import { AuthContext } from "./src/context/Auth";
 
+const AuthStateContext = createContext();
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 
 export default function App({ navigation }) {
   useEffect(() => {
-    // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
       let userToken;
 
       try {
         userToken = await AsyncStorage.getItem("userToken");
-      } catch (e) {
-        // Restoring token failed
-      }
-      dispatch({ type: "RESTORE_TOKEN", token: userToken });
+      } catch (e) {}
+      const { id } = userToken ? jwtDecode(userToken) : false;
+
+      dispatch({
+        type: "RESTORE_TOKEN",
+        token: { userToken, id },
+      });
     };
     bootstrapAsync();
   }, []);
@@ -47,19 +51,14 @@ export default function App({ navigation }) {
   const authContextValue = React.useMemo(
     () => ({
       signIn: async (data) => {
-        console.log("do i get here", data);
-        dispatch({ type: "SIGN_IN", token: data });
+        const { id } = jwtDecode(data);
+        dispatch({ type: "SIGN_IN", token: { data, id } });
       },
       signOut: async () => {
         await AsyncStorage.removeItem("userToken");
         dispatch({ type: "SIGN_OUT" });
       },
       signUp: async (data) => {
-        // In a production app, we need to send user data to server and get a token
-        // We will also need to handle errors if sign up failed
-        // After getting token, we need to persist the token using `AsyncStorage`
-        // In the example, we'll use a dummy token
-
         dispatch({ type: "SIGN_IN", token: "dummy-auth-token" });
       },
     }),
@@ -85,8 +84,9 @@ export default function App({ navigation }) {
         case "RESTORE_TOKEN":
           return {
             ...prevState,
-            userToken: action.token,
+            userToken: action.token.userToken,
             isLoading: false,
+            userId: action.token.id,
           };
         case "SIGNED_UP":
           return {
@@ -102,7 +102,8 @@ export default function App({ navigation }) {
             isSignedOut: false,
             isSignedIn: true,
             isSignedUp: true,
-            userToken: action.token,
+            userToken: action.token.data,
+            userId: action.token.id,
           };
         case "SIGN_OUT":
           return {
@@ -120,27 +121,33 @@ export default function App({ navigation }) {
       isSignedUp: false,
       noAccount: false,
       isSignedIn: false,
-      userToken: null,
+      userToken: false,
+      userId: false,
     }
   );
+  console.log(state);
   return (
     <AuthContext.Provider value={authContextValue}>
       <ApolloProvider client={client}>
-        <NavigationContainer>
-          {state.userToken != null ? (
-            <Tab.Navigator initialRouteName="My Profile">
-              <Tab.Screen name="My Profile" component={Profile} />
-              <Tab.Screen name="Chat" component={Main} />
-              <Tab.Screen name="Discover" component={Main} />
-            </Tab.Navigator>
-          ) : (
-            <Drawer.Navigator initialRouteName="Home">
-              <Drawer.Screen name="Home" component={Home} />
-              <Drawer.Screen name="Login" component={Login} />
-              <Drawer.Screen name="Signup" component={Signup} />
-            </Drawer.Navigator>
-          )}
-        </NavigationContainer>
+        <AuthStateContext.Provider value={state}>
+          <SafeAreaView style={styles.container}>
+            <NavigationContainer>
+              {state.userToken != null ? (
+                <Tab.Navigator initialRouteName="My Profile">
+                  <Tab.Screen name="My Profile" component={Profile} />
+                  <Tab.Screen name="Chat" component={Main} />
+                  <Tab.Screen name="Discover" component={Main} />
+                </Tab.Navigator>
+              ) : (
+                <Drawer.Navigator initialRouteName="Home">
+                  <Drawer.Screen name="Home" component={Home} />
+                  <Drawer.Screen name="Login" component={Login} />
+                  <Drawer.Screen name="Signup" component={Signup} />
+                </Drawer.Navigator>
+              )}
+            </NavigationContainer>
+          </SafeAreaView>
+        </AuthStateContext.Provider>
       </ApolloProvider>
     </AuthContext.Provider>
   );
@@ -149,8 +156,5 @@ export default function App({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
   },
 });
