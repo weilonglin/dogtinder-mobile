@@ -13,24 +13,12 @@ export const Profile = ({ navigation, route }) => {
   const { signOut } = useContext(AuthContext);
   const { data } = useQuery(GET_USER, {
     variables: {
-      id: user,
+      id: route.params.userId,
     },
   });
   console.log(data);
+  console.log(user);
 
-  useEffect(() => {
-    async function getUserId() {
-      try {
-        const storeToken = await AsyncStorage.getItem("userToken");
-        const decodedToken = jwtDecode(storeToken);
-
-        setUser(decodedToken.id);
-      } catch (error) {
-        console.log("error", error.message);
-      }
-    }
-    getUserId();
-  }, []);
   if (data) {
     return (
       <View style={styles.container}>

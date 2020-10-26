@@ -6,7 +6,12 @@ import React, {
   useReducer,
 } from "react";
 import jwtDecode from "jwt-decode";
-import { StyleSheet, View, SafeAreaView } from "react-native";
+import {
+  StyleSheet,
+  View,
+  SafeAreaView,
+  DrawerLayoutAndroidBase,
+} from "react-native";
 import { client } from "./src/graphql/client";
 import { ApolloProvider } from "@apollo/client";
 import { NavigationContainer } from "@react-navigation/native";
@@ -22,6 +27,7 @@ import { Home } from "./src/screens/Home/Home";
 import { Login } from "./src/screens/Login/Login";
 import { Signup } from "./src/screens/Signup/Signup";
 import { Profile } from "./src/screens/Profile/Profile";
+import { Chat } from "./src/screens/Chat/Chat";
 
 import { AuthContext } from "./src/context/Auth";
 
@@ -39,11 +45,12 @@ export default function App({ navigation }) {
         userToken = await AsyncStorage.getItem("userToken");
       } catch (e) {}
       const { id } = userToken ? jwtDecode(userToken) : false;
-
-      dispatch({
-        type: "RESTORE_TOKEN",
-        token: { userToken, id },
-      });
+      if (userToken != null && userToken != undefined) {
+        dispatch({
+          type: "RESTORE_TOKEN",
+          token: { userToken, id },
+        });
+      }
     };
     bootstrapAsync();
   }, []);
@@ -52,6 +59,7 @@ export default function App({ navigation }) {
     () => ({
       signIn: async (data) => {
         const { id } = jwtDecode(data);
+
         dispatch({ type: "SIGN_IN", token: { data, id } });
       },
       signOut: async () => {
@@ -111,7 +119,8 @@ export default function App({ navigation }) {
             isSignedOut: true,
             isSignedIn: false,
             isSignedUp: true,
-            userToken: null,
+            userToken: false,
+            userId: false,
           };
       }
     },
@@ -126,17 +135,30 @@ export default function App({ navigation }) {
     }
   );
   console.log(state);
+
   return (
     <AuthContext.Provider value={authContextValue}>
       <ApolloProvider client={client}>
         <AuthStateContext.Provider value={state}>
           <SafeAreaView style={styles.container}>
             <NavigationContainer>
-              {state.userToken != null ? (
+              {state.userToken != false && state.userId != false ? (
                 <Tab.Navigator initialRouteName="My Profile">
-                  <Tab.Screen name="My Profile" component={Profile} />
-                  <Tab.Screen name="Chat" component={Main} />
-                  <Tab.Screen name="Discover" component={Main} />
+                  <Tab.Screen
+                    name="My Profile"
+                    component={Profile}
+                    initialParams={state}
+                  />
+                  <Tab.Screen
+                    name="Chat"
+                    component={Chat}
+                    initialParams={state}
+                  />
+                  <Tab.Screen
+                    name="Discover"
+                    component={Main}
+                    initialParams={state}
+                  />
                 </Tab.Navigator>
               ) : (
                 <Drawer.Navigator initialRouteName="Home">
