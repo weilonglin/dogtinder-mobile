@@ -28,6 +28,7 @@ import { Login } from "./src/screens/Login/Login";
 import { Signup } from "./src/screens/Signup/Signup";
 import { Profile } from "./src/screens/Profile/Profile";
 import { Chat } from "./src/screens/Chat/Chat";
+import { ChatWindow } from "./src/screens/ChatWindow/ChatWindow";
 
 import { AuthContext } from "./src/context/Auth";
 
@@ -136,6 +137,15 @@ export default function App({ navigation }) {
   );
   console.log(state);
 
+  function ChatStack() {
+    return (
+      <Stack.Navigator initialRouteName="Chat">
+        <Stack.Screen name="Chat" component={Chat} initialParams={state} />
+        <Stack.Screen name="Chat Window" component={ChatWindow} />
+      </Stack.Navigator>
+    );
+  }
+
   return (
     <AuthContext.Provider value={authContextValue}>
       <ApolloProvider client={client}>
@@ -151,7 +161,7 @@ export default function App({ navigation }) {
                   />
                   <Tab.Screen
                     name="Chat"
-                    component={Chat}
+                    component={ChatStack}
                     initialParams={state}
                   />
                   <Tab.Screen

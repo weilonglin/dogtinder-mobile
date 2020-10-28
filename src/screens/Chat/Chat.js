@@ -6,7 +6,7 @@ import { ListItem, Avatar } from "react-native-elements";
 import jwtDecode from "jwt-decode";
 import { GET_MESSAGES, SUB_MESSAGE } from "../../graphql/queries";
 
-export const Chat = ({ route }) => {
+export const Chat = ({ navigation, route }) => {
   const [allNames, setAllnames] = useState([]);
   const [sender, setSender] = useState([]);
 
@@ -63,6 +63,7 @@ export const Chat = ({ route }) => {
     console.log("msgT", msgT);
     const filter = getUnique(msgT);
     setAllnames(filter);
+    setSender(msgT);
   }, [msgT]);
 
   useEffect(() => {
@@ -88,6 +89,9 @@ export const Chat = ({ route }) => {
               .filter((e) => e.id != route.params.userId);
       console.log("sub final arr", unique);
       setAllnames(unique);
+
+      const newMessage = [...sender, subData.chatMessage];
+      setSender(newMessage);
     }
   }, [subData]);
 
@@ -105,12 +109,22 @@ export const Chat = ({ route }) => {
         ) : (
           allNames.map((user) => {
             return (
-              <ListItem key={`listItem-${user.id}`} bottomDivider>
+              <ListItem
+                key={`listItem-${user.id}`}
+                bottomDivider
+                onPress={() =>
+                  navigation.navigate("Chat Window", {
+                    messages: sender,
+                    id: user.id,
+                  })
+                }
+              >
                 <Avatar rounded source={{ uri: user.imageUrl }} size={50} />
                 <ListItem.Content>
                   <ListItem.Title>{user.userName}</ListItem.Title>
                   <ListItem.Subtitle>Last message: {user.id}</ListItem.Subtitle>
                 </ListItem.Content>
+                <ListItem.Chevron color="gray" />
               </ListItem>
             );
           })
