@@ -108,13 +108,24 @@ export const Chat = ({ navigation, route }) => {
           <Text>No messages</Text>
         ) : (
           allNames.map((user) => {
+            const chatsSender = sender.filter((name) => {
+              if (
+                name.recipientName === user.userName ||
+                parseInt(name.userId) === parseInt(user.id)
+              ) {
+                return name;
+              } else {
+                return null;
+              }
+            });
             return (
               <ListItem
+                extraData
                 key={`listItem-${user.id}`}
                 bottomDivider
                 onPress={() =>
                   navigation.navigate("Chat Window", {
-                    messages: sender,
+                    messages: chatsSender,
                     id: user.id,
                   })
                 }

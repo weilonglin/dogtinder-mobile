@@ -1,34 +1,21 @@
-import React, {
-  useState,
-  useEffect,
-  createContext,
-  useMemo,
-  useReducer,
-} from "react";
+import React, { useEffect, createContext, useReducer } from "react";
 import jwtDecode from "jwt-decode";
-import {
-  StyleSheet,
-  View,
-  SafeAreaView,
-  DrawerLayoutAndroidBase,
-} from "react-native";
+import AsyncStorage from "@react-native-community/async-storage";
+import { StyleSheet, View, SafeAreaView } from "react-native";
 import { client } from "./src/graphql/client";
 import { ApolloProvider } from "@apollo/client";
 import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
-import AsyncStorage from "@react-native-community/async-storage";
-
-import { Main } from "./src/screens";
 import { Home } from "./src/screens/Home/Home";
 import { Login } from "./src/screens/Login/Login";
 import { Signup } from "./src/screens/Signup/Signup";
 import { Profile } from "./src/screens/Profile/Profile";
 import { Chat } from "./src/screens/Chat/Chat";
 import { ChatWindow } from "./src/screens/ChatWindow/ChatWindow";
+import { Deck } from "./src/screens/Deck/Deck";
 
 import { AuthContext } from "./src/context/Auth";
 
@@ -141,7 +128,11 @@ export default function App({ navigation }) {
     return (
       <Stack.Navigator initialRouteName="Chat">
         <Stack.Screen name="Chat" component={Chat} initialParams={state} />
-        <Stack.Screen name="Chat Window" component={ChatWindow} />
+        <Stack.Screen
+          name="Chat Window"
+          component={ChatWindow}
+          initialParams={state}
+        />
       </Stack.Navigator>
     );
   }
@@ -166,7 +157,7 @@ export default function App({ navigation }) {
                   />
                   <Tab.Screen
                     name="Discover"
-                    component={Main}
+                    component={Deck}
                     initialParams={state}
                   />
                 </Tab.Navigator>
