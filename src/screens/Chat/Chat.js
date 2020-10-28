@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import { useQuery, useSubscription } from "@apollo/client";
 import AsyncStorage from "@react-native-community/async-storage";
-import { ListItem } from "react-native-elements";
+import { ListItem, Avatar } from "react-native-elements";
 import jwtDecode from "jwt-decode";
 import { GET_MESSAGES, SUB_MESSAGE } from "../../graphql/queries";
 
@@ -52,33 +52,41 @@ export const Chat = ({ route }) => {
         .map((e) => e["userName"])
         .map((e, i, final) => final.indexOf(e) === i && i)
         .filter((e) => flatFilterUnique[e])
-        .map((e) => flatFilterUnique[e]);
+        .map((e) => flatFilterUnique[e])
+        .filter((e) => e.id != route.params.userId);
       console.log(uniqueUserName);
       return uniqueUserName;
     }
   }
 
   useEffect(() => {
+    console.log("msgT", msgT);
     const filter = getUnique(msgT);
     setAllnames(filter);
   }, [msgT]);
 
   useEffect(() => {
     if (subData != null) {
-      const filter = getUnique(subData);
-      console.log("useeffect else", filter);
+      const newArray = [
+        ...allNames,
+        [subData.chatMessage.sender],
+        [subData.chatMessage.recipient],
+      ];
 
-      const newArray = filter != null ? [...allNames, ...filter] : null;
+      console.log("newArr", newArray.flat());
 
+      const newArr = newArray.flat();
       const unique =
-        newArray === null
+        newArr === null
           ? null
-          : newArray
+          : newArr
+              .flat()
               .map((e) => e["userName"])
               .map((e, i, final) => final.indexOf(e) === i && i)
-              .filter((e) => newArray[e])
-              .map((e) => newArray[e]);
-
+              .filter((e) => newArr[e])
+              .map((e) => newArr[e])
+              .filter((e) => e.id != route.params.userId);
+      console.log("sub final arr", unique);
       setAllnames(unique);
     }
   }, [subData]);
@@ -89,34 +97,22 @@ export const Chat = ({ route }) => {
         <Text>...Loading</Text>
       </View>
     );
-  }
-  {
+  } else {
     return (
       <View>
         {allNames == null ? (
-          <Text>"No messages"</Text>
+          <Text>No messages</Text>
         ) : (
           allNames.map((user) => {
-            console.log(user);
-            console.log(allNames);
-            if (user.id !== parseInt(route.params.userId)) {
-              return (
-                <ListItem
-                  leftAvatar={{
-                    title: user.userName,
-                    source: { uri: user.imageUrl },
-                    showAccessory: true,
-                    size: 80,
-                  }}
-                  title={user.userName}
-                  subtitle={`${user.id}`}
-                  key={`listItem-${user.id}`}
-                  chevron
-                />
-              );
-            } else {
-              return null;
-            }
+            return (
+              <ListItem key={`listItem-${user.id}`} bottomDivider>
+                <Avatar rounded source={{ uri: user.imageUrl }} size={50} />
+                <ListItem.Content>
+                  <ListItem.Title>{user.userName}</ListItem.Title>
+                  <ListItem.Subtitle>Last message: {user.id}</ListItem.Subtitle>
+                </ListItem.Content>
+              </ListItem>
+            );
           })
         )}
       </View>

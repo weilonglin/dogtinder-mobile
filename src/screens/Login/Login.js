@@ -8,8 +8,7 @@ import {
   ImageBackground,
 } from "react-native";
 import AsyncStorage from "@react-native-community/async-storage";
-import { useLazyQuery } from "@apollo/client";
-import { LOGIN_USER } from "../../graphql/queries";
+
 import { AuthContext } from "../../context/Auth";
 
 const backGroundImage = {
@@ -23,26 +22,9 @@ export const Login = ({ navigation, route }) => {
   });
   const { signIn, signUp } = useContext(AuthContext);
 
-  const [loginUser, { loading }] = useLazyQuery(LOGIN_USER, {
-    onError: (err) => console.log(err.graphQLErrors),
-    onCompleted(data) {
-      console.log("data", data);
-      try {
-        const setStorage = async () => {
-          await AsyncStorage.setItem("userToken", data.login.token);
-        };
-        setStorage();
-        signIn(data.login.token);
-      } catch (error) {
-        // Error saving data
-      }
-    },
-  });
-
   const submitLoginForm = (e) => {
     e.preventDefault();
-
-    loginUser({ variables });
+    signIn({ variables });
   };
 
   return (
