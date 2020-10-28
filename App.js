@@ -1,27 +1,21 @@
-import React, {
-  useState,
-  useEffect,
-  createContext,
-  useMemo,
-  useReducer,
-} from "react";
+import React, { useEffect, createContext, useReducer } from "react";
 import jwtDecode from "jwt-decode";
+import AsyncStorage from "@react-native-community/async-storage";
 import { StyleSheet, View, SafeAreaView } from "react-native";
 import { client } from "./src/graphql/client";
 import { ApolloProvider } from "@apollo/client";
 import { NavigationContainer } from "@react-navigation/native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 
-import AsyncStorage from "@react-native-community/async-storage";
-
-import { Main } from "./src/screens";
 import { Home } from "./src/screens/Home/Home";
 import { Login } from "./src/screens/Login/Login";
 import { Signup } from "./src/screens/Signup/Signup";
 import { Profile } from "./src/screens/Profile/Profile";
+import { Chat } from "./src/screens/Chat/Chat";
+import { ChatWindow } from "./src/screens/ChatWindow/ChatWindow";
+import { Deck } from "./src/screens/Deck/Deck";
 
 import { AuthContext } from "./src/context/Auth";
 
@@ -39,11 +33,12 @@ export default function App({ navigation }) {
         userToken = await AsyncStorage.getItem("userToken");
       } catch (e) {}
       const { id } = userToken ? jwtDecode(userToken) : false;
-
-      dispatch({
-        type: "RESTORE_TOKEN",
-        token: { userToken, id },
-      });
+      if (userToken != null && userToken != undefined) {
+        dispatch({
+          type: "RESTORE_TOKEN",
+          token: { userToken, id },
+        });
+      }
     };
     bootstrapAsync();
   }, []);
@@ -52,6 +47,7 @@ export default function App({ navigation }) {
     () => ({
       signIn: async (data) => {
         const { id } = jwtDecode(data);
+
         dispatch({ type: "SIGN_IN", token: { data, id } });
       },
       signOut: async () => {
@@ -111,7 +107,8 @@ export default function App({ navigation }) {
             isSignedOut: true,
             isSignedIn: false,
             isSignedUp: true,
-            userToken: null,
+            userToken: false,
+            userId: false,
           };
       }
     },
@@ -126,17 +123,43 @@ export default function App({ navigation }) {
     }
   );
   console.log(state);
+
+  function ChatStack() {
+    return (
+      <Stack.Navigator initialRouteName="Chat">
+        <Stack.Screen name="Chat" component={Chat} initialParams={state} />
+        <Stack.Screen
+          name="Chat Window"
+          component={ChatWindow}
+          initialParams={state}
+        />
+      </Stack.Navigator>
+    );
+  }
+
   return (
     <AuthContext.Provider value={authContextValue}>
       <ApolloProvider client={client}>
         <AuthStateContext.Provider value={state}>
           <SafeAreaView style={styles.container}>
             <NavigationContainer>
-              {state.userToken != null ? (
+              {state.userToken != false && state.userId != false ? (
                 <Tab.Navigator initialRouteName="My Profile">
-                  <Tab.Screen name="My Profile" component={Profile} />
-                  <Tab.Screen name="Chat" component={Main} />
-                  <Tab.Screen name="Discover" component={Main} />
+                  <Tab.Screen
+                    name="My Profile"
+                    component={Profile}
+                    initialParams={state}
+                  />
+                  <Tab.Screen
+                    name="Chat"
+                    component={ChatStack}
+                    initialParams={state}
+                  />
+                  <Tab.Screen
+                    name="Discover"
+                    component={Deck}
+                    initialParams={state}
+                  />
                 </Tab.Navigator>
               ) : (
                 <Drawer.Navigator initialRouteName="Home">
