@@ -7,6 +7,7 @@ import {
   Alert,
   Text,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { ListItem, Avatar, Button } from "react-native-elements";
 import { useQuery, useSubscription } from "@apollo/client";
 import { GET_MESSAGES, SUB_MESSAGE } from "../../graphql/queries";
@@ -40,26 +41,49 @@ export const ChatWindow = ({ navigation, route }) => {
         {messages.map((message, i) => {
           if (message.userId === route.params.userId) {
             return (
-              <ListItem
-                key={`chatwindow-${i}`}
-                styles={styles.litsItemBackground}
-              >
-                <ListItem.Content style={styles.messageTextContainer}>
-                  <ListItem.Title style={styles.messageText}>
-                    {message.message}
-                  </ListItem.Title>
+              <ListItem key={`chatwindow-${i}`}>
+                <ListItem.Content style={styles.messageTextContainerRight}>
+                  <View style={styles.messageTextBubleRight}>
+                    <LinearGradient
+                      colors={["#ff7854", "#fd267d"]}
+                      start={{ x: 0, y: 1 }}
+                      end={{ x: 1, y: 0 }}
+                      style={styles.bubbleBackgroundColorRight}
+                    >
+                      <ListItem.Title style={styles.messageText}>
+                        {message.message}
+                      </ListItem.Title>
+                    </LinearGradient>
+                  </View>
                 </ListItem.Content>
-                <Avatar rounded source={{ uri: message.imageUrl }} />
+                <Avatar
+                  rounded
+                  size="medium"
+                  source={{ uri: message.imageUrl }}
+                />
               </ListItem>
             );
           } else {
             return (
               <ListItem key={`chatwindow-${i}`}>
-                <View>
-                  <Avatar rounded source={{ uri: message.imageUrl }} />
-                </View>
-                <ListItem.Content>
-                  <ListItem.Title>{message.message}</ListItem.Title>
+                <Avatar
+                  rounded
+                  size="medium"
+                  source={{ uri: message.imageUrl }}
+                />
+                <ListItem.Content style={styles.messageTextContainerLeft}>
+                  <View style={styles.messageTextBubleLeft}>
+                    <LinearGradient
+                      colors={["#fd267d", "#ff7854"]}
+                      start={{ x: 0, y: 1 }}
+                      end={{ x: 1, y: 0 }}
+                      style={styles.bubbleBackgroundColorLeft}
+                    >
+                      <ListItem.Title style={styles.messageText}>
+                        {message.message}
+                      </ListItem.Title>
+                    </LinearGradient>
+                  </View>
                 </ListItem.Content>
               </ListItem>
             );
@@ -93,7 +117,6 @@ const styles = StyleSheet.create({
   },
   messageContainer: {
     flex: 8,
-    backgroundColor: "grey",
   },
   messageInput: {
     height: 50,
@@ -108,14 +131,37 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: "flex-end",
   },
-  messageTextContainer: {
+  messageTextContainerLeft: {
     justifyContent: "space-between",
-    backgroundColor: "transparent",
+    marginRight: 100,
+  },
+  messageTextContainerRight: {
+    justifyContent: "space-between",
+    marginLeft: 100,
   },
   messageText: {
-    alignSelf: "flex-end",
+    color: "#fff",
   },
-  litsItemBackground: {
-    backgroundColor: "red",
+  messageTextBubleRight: {
+    overflow: "hidden",
+    alignSelf: "flex-end",
+    borderBottomLeftRadius: 15,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+  },
+  bubbleBackgroundColorRight: {
+    overflow: "hidden",
+    padding: 10,
+  },
+  messageTextBubleLeft: {
+    overflow: "hidden",
+    alignSelf: "flex-start",
+    borderBottomRightRadius: 15,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+  },
+  bubbleBackgroundColorLeft: {
+    overflow: "hidden",
+    padding: 10,
   },
 });
