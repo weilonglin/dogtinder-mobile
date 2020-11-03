@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { ScrollView, Text } from "react-native";
 import { useQuery, useSubscription } from "@apollo/client";
 import AsyncStorage from "@react-native-community/async-storage";
 import { ListItem, Avatar } from "react-native-elements";
@@ -103,7 +103,7 @@ export const Chat = ({ navigation, route }) => {
     );
   } else {
     return (
-      <View>
+      <ScrollView>
         {allNames == null ? (
           <Text>No messages</Text>
         ) : (
@@ -140,7 +140,7 @@ export const Chat = ({ navigation, route }) => {
             );
           })
         )}
-      </View>
+      </ScrollView>
     );
   }
 };
