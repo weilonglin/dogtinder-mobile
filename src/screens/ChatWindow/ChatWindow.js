@@ -6,11 +6,17 @@ import {
   StyleSheet,
   Alert,
   Text,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard,
+  KeyboardAvoidingView,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { ListItem, Avatar, Button } from "react-native-elements";
 import { useQuery, useSubscription } from "@apollo/client";
 import { GET_MESSAGES, SUB_MESSAGE } from "../../graphql/queries";
+
+import { InputField } from "../../components/Chat/InputField/Index";
 
 export const ChatWindow = ({ navigation, route }) => {
   const [text, setText] = useState("");
@@ -90,21 +96,7 @@ export const ChatWindow = ({ navigation, route }) => {
           }
         })}
       </ScrollView>
-      <View style={styles.messageInput}>
-        <View>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={(text) => setText(text)}
-            value={text}
-            placeholder="Type here...."
-          />
-          <Button
-            style={styles.textButton}
-            title="Press me"
-            onPress={() => Alert.alert("Simple Button pressed")}
-          />
-        </View>
-      </View>
+      <InputField />
     </View>
   );
 };
@@ -115,21 +107,36 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#fff",
   },
+  inputContainer: {
+    flex: 1,
+  },
   messageContainer: {
-    flex: 8,
+    flex: 1,
+    backgroundColor: "transparent",
   },
   messageInput: {
+    flex: 1,
     height: 50,
-    borderColor: "gray",
-    borderWidth: 1,
+    borderColor: "#fd267d",
+    borderWidth: 2,
+    borderRadius: 20,
+    marginLeft: 10,
+    marginRight: 10,
+    color: "black",
+    backgroundColor: "#fff",
+    flexDirection: "row",
   },
   textInput: {
     flex: 9,
-    alignItems: "stretch",
+    alignSelf: "flex-start",
+    height: 40,
+    paddingLeft: 15,
+    paddingTop: 2,
   },
   textButton: {
     flex: 1,
     alignSelf: "flex-end",
+    backgroundColor: "red",
   },
   messageTextContainerLeft: {
     justifyContent: "space-between",
