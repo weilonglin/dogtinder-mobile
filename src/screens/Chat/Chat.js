@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ScrollView, Text } from "react-native";
 import { useQuery, useSubscription } from "@apollo/client";
-import AsyncStorage from "@react-native-community/async-storage";
+
 import { ListItem, Avatar } from "react-native-elements";
 import jwtDecode from "jwt-decode";
 import { GET_MESSAGES, SUB_MESSAGE } from "../../graphql/queries";
@@ -9,13 +9,13 @@ import { GET_MESSAGES, SUB_MESSAGE } from "../../graphql/queries";
 export const Chat = ({ navigation, route }) => {
   const [allNames, setAllnames] = useState([]);
   const [sender, setSender] = useState([]);
+  const [myImage, setMyImage] = useState("");
 
   const { data: msgData } = useQuery(GET_MESSAGES, {
     variables: {
       id: route.params.userId,
     },
   });
-  console.log("messages", msgData);
 
   const msgT = msgData === undefined ? null : msgData["chatMessage"];
 
@@ -127,6 +127,7 @@ export const Chat = ({ navigation, route }) => {
                   navigation.navigate("Chat Window", {
                     messages: chatsSender,
                     id: user.id,
+                    recipientName: user.userName,
                   })
                 }
               >

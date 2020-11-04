@@ -14,6 +14,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { ListItem, Avatar, Button } from "react-native-elements";
 import { useQuery, useSubscription } from "@apollo/client";
+import AsyncStorage from "@react-native-community/async-storage";
 import { GET_MESSAGES, SUB_MESSAGE } from "../../graphql/queries";
 
 import { InputField } from "../../components/Chat/InputField/Index";
@@ -21,7 +22,7 @@ import { InputField } from "../../components/Chat/InputField/Index";
 export const ChatWindow = ({ navigation, route }) => {
   const [text, setText] = useState("");
   const [messages, setMessages] = useState([]);
-
+  const [myImage, setMyImage] = useState("");
   const { loading: subLoading, data: subData } = useSubscription(SUB_MESSAGE, {
     variables: {
       userId: route.params.userId,
@@ -32,6 +33,8 @@ export const ChatWindow = ({ navigation, route }) => {
   useEffect(() => {
     setMessages(route.params.messages);
   }, []);
+
+  console.log("user image????", route.params.userImg);
 
   useEffect(() => {
     if (subData != null) {
@@ -96,7 +99,12 @@ export const ChatWindow = ({ navigation, route }) => {
           }
         })}
       </ScrollView>
-      <InputField />
+      <InputField
+        userId={route.params.userId}
+        otherId={route.params.id}
+        recipientName={route.params.recipientName}
+        userImg={route.params.userImg}
+      />
     </View>
   );
 };
@@ -110,34 +118,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     flex: 1,
   },
-  messageContainer: {
-    flex: 1,
-    backgroundColor: "transparent",
-  },
-  messageInput: {
-    flex: 1,
-    height: 50,
-    borderColor: "#fd267d",
-    borderWidth: 2,
-    borderRadius: 20,
-    marginLeft: 10,
-    marginRight: 10,
-    color: "black",
-    backgroundColor: "#fff",
-    flexDirection: "row",
-  },
-  textInput: {
-    flex: 9,
-    alignSelf: "flex-start",
-    height: 40,
-    paddingLeft: 15,
-    paddingTop: 2,
-  },
-  textButton: {
-    flex: 1,
-    alignSelf: "flex-end",
-    backgroundColor: "red",
-  },
+
   messageTextContainerLeft: {
     justifyContent: "space-between",
     marginRight: 100,

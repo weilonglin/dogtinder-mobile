@@ -8,17 +8,46 @@ import {
   Platform,
   StyleSheet,
 } from "react-native";
+import { useMutation } from "@apollo/client";
 
-import {
-  MaterialCommunityIcons,
-  MaterialIcons,
-  FontAwesome5,
-  Entypo,
-  Fontisto,
-} from "@expo/vector-icons";
+import { SEND_MESSAGE } from "../../../graphql/queries";
 
-export const InputField = () => {
+import { MaterialIcons } from "@expo/vector-icons";
+
+export const InputField = (props) => {
+  let today = new Date();
+
   const [message, setMessage] = useState("");
+
+  const [sendMessage] = useMutation(SEND_MESSAGE, {
+    onError: (err) => console.log(err.graphQLErrors),
+    onCompleted: () => console.log("mutation completed..."),
+  });
+
+  const submitMessage = (e) => {
+    e.preventDefault();
+    sendMessage({
+      variables: {
+        userId: props.userId,
+        message: message,
+        recipientId: props.otherId,
+        recipientName: props.recipientName,
+        imageUrl: props.userImg,
+        date: `${
+          today.getFullYear() +
+          "-" +
+          (today.getMonth() + 1) +
+          "-" +
+          today.getDate()
+        }`,
+        time: `${
+          today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds()
+        }`,
+      },
+    });
+    setMessage("");
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS == "ios" ? "padding" : "height"}
@@ -35,7 +64,7 @@ export const InputField = () => {
             onChangeText={setMessage}
           />
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={submitMessage}>
           <View style={styles.buttonContainer}>
             <MaterialIcons name="send" size={28} color="white" />
           </View>
