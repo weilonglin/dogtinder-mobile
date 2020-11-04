@@ -16,8 +16,18 @@ export const Profile = ({ navigation, route }) => {
       id: route.params.userId,
     },
   });
-  console.log(data);
-  console.log(user);
+
+  useEffect(() => {
+    try {
+      const setStorage = !data
+        ? null
+        : async () => {
+            await AsyncStorage.setItem("userImg", data.user.imageUrl);
+          };
+    } catch (error) {
+      console.log(error);
+    }
+  }, [data]);
 
   if (data) {
     return (

@@ -28,15 +28,16 @@ export default function App({ navigation }) {
   useEffect(() => {
     const bootstrapAsync = async () => {
       let userToken;
-
+      let img;
       try {
         userToken = await AsyncStorage.getItem("userToken");
+        img = await AsyncStorage.getItem("userImg");
       } catch (e) {}
       const { id } = userToken ? jwtDecode(userToken) : false;
       if (userToken != null && userToken != undefined) {
         dispatch({
           type: "RESTORE_TOKEN",
-          token: { userToken, id },
+          token: { userToken, id, img },
         });
       }
     };
@@ -83,6 +84,7 @@ export default function App({ navigation }) {
             userToken: action.token.userToken,
             isLoading: false,
             userId: action.token.id,
+            userImg: action.token.img,
           };
         case "SIGNED_UP":
           return {
@@ -120,6 +122,7 @@ export default function App({ navigation }) {
       isSignedIn: false,
       userToken: false,
       userId: false,
+      userImg: false,
     }
   );
   console.log(state);
