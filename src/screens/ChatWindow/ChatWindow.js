@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   ScrollView,
   TextInput,
@@ -29,7 +29,7 @@ export const ChatWindow = ({ navigation, route }) => {
       recipientId: route.params.userId,
     },
   });
-
+  const scrollRef = useRef();
   useEffect(() => {
     setMessages(route.params.messages);
   }, []);
@@ -43,10 +43,13 @@ export const ChatWindow = ({ navigation, route }) => {
     }
   }, [subData]);
 
-  console.log("chatwindow", route);
+  const scrollToBot = () => {
+    scrollRef.current.scrollToEnd();
+  };
+
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.messageContainer}>
+      <ScrollView ref={scrollRef} onContentSizeChange={scrollToBot}>
         {messages.map((message, i) => {
           if (message.userId === route.params.userId) {
             return (

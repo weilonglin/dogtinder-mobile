@@ -26,25 +26,31 @@ export const InputField = (props) => {
 
   const submitMessage = (e) => {
     e.preventDefault();
-    sendMessage({
-      variables: {
-        userId: props.userId,
-        message: message,
-        recipientId: props.otherId,
-        recipientName: props.recipientName,
-        imageUrl: props.userImg,
-        date: `${
-          today.getFullYear() +
-          "-" +
-          (today.getMonth() + 1) +
-          "-" +
-          today.getDate()
-        }`,
-        time: `${
-          today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds()
-        }`,
-      },
-    });
+    if (message !== "") {
+      sendMessage({
+        variables: {
+          userId: props.userId,
+          message: message,
+          recipientId: props.otherId,
+          recipientName: props.recipientName,
+          imageUrl: props.userImg,
+          date: `${
+            today.getFullYear() +
+            "-" +
+            (today.getMonth() + 1) +
+            "-" +
+            today.getDate()
+          }`,
+          time: `${
+            today.getHours() +
+            ":" +
+            today.getMinutes() +
+            ":" +
+            today.getSeconds()
+          }`,
+        },
+      });
+    }
     setMessage("");
   };
 
